@@ -3,7 +3,7 @@
 const int MOTOR_FORWARD_BACKWARD = 1;
 const int MOTOR_LEFT_RIGHT = 2;
 
-MotorController motorController_(MOTOR_FORWARD_BACKWARD, MOTOR_LEFT_RIGHT, 255, 5);
+MotorController motorController_(MOTOR_FORWARD_BACKWARD, MOTOR_LEFT_RIGHT, 100, 500, 5);
 
 void setup() {
 
@@ -11,5 +11,5 @@ void setup() {
 }
 
 void loop() {
-  motorController_.moveForward(100);
+  motorController_.moveForward(10000);
 }

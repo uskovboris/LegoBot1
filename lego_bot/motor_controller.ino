@@ -2,8 +2,8 @@
 
 #include <math.h>
 
-MotorController::MotorController(int forwardBackwardMotor, int leftRightMotor, Speed initialSpeed, Speed speedStep)
-  : forwardBackwardMotor_(forwardBackwardMotor), leftRightMotor_(leftRightMotor), speed_(initialSpeed), speedStep_(speedStep) {
+MotorController::MotorController(int forwardBackwardMotor, int leftRightMotor, Speed initialSpeed, Speed finalSpeed, Speed speedStep)
+  : forwardBackwardMotor_(forwardBackwardMotor), leftRightMotor_(leftRightMotor), initialSpeed_(initialSpeed), finalSpeed_(finalSpeed), speedStep_(speedStep), speed_(0) {
 }
 
 void MotorController::setSpeed(Speed speed) {
@@ -27,9 +27,9 @@ void MotorController::moveForward(unsigned int movingDuration) {
   //Motor spinning anti-clockwise
   forwardBackwardMotor_.run(BACKWARD);
 
-  speedUp(0, getSpeed(), movingDuration);
+  speedUp(initialSpeed_, finalSpeed_, movingDuration);
 
-  speedDown(getSpeed(), 0, movingDuration);
+  speedDown(finalSpeed_, initialSpeed_, movingDuration);
 
   // Now turn off motor
   forwardBackwardMotor_.run(RELEASE);
@@ -48,12 +48,9 @@ void MotorController::turnRight(unsigned int movingDuration) {
 
 void MotorController::speedUp(Speed fromSpeed, Speed toSpeed, unsigned int movingDuration) {
   unsigned int timeQuant = calculateTimeQuant(fromSpeed, toSpeed, movingDuration);
-  Serial.print("timeQuant: ");
-  Serial.print(static_cast<int>(timeQuant));
-  Serial.print(" seconds\n");
-
   for (uint8_t i = fromSpeed; i < toSpeed; i += speedStep_) {
     forwardBackwardMotor_.setSpeed(i);
+    setSpeed(i);
     delay(timeQuant);
   }
 }
@@ -62,11 +59,14 @@ void MotorController::speedDown(Speed fromSpeed, Speed toSpeed, unsigned int mov
   unsigned int timeQuant = calculateTimeQuant(fromSpeed, toSpeed, movingDuration);
   for (uint8_t i = fromSpeed; i != toSpeed; i -= speedStep_) {
     forwardBackwardMotor_.setSpeed(i);
+    setSpeed(i);
     delay(timeQuant);
   }
 }
 
 unsigned int MotorController::calculateTimeQuant(Speed fromSpeed, Speed toSpeed, unsigned int movingDuration) {
-  unsigned int timeQuantsCount = abs(fromSpeed - toSpeed) / speedStep_;
-  return movingDuration / timeQuantsCount;
+  unsigned int speedDiff = abs(fromSpeed - toSpeed);
+  unsigned int timeQuantsCount = speedDiff / speedStep_;
+  unsigned int timeQuant = movingDuration / timeQuantsCount;
+  return timeQuant;
 }

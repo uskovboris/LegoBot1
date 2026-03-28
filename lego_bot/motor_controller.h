@@ -6,9 +6,8 @@ using Speed = uint8_t;
 
 class MotorController {
 public:
-  MotorController(int forwardBackwardMotor, int leftRightMotof, Speed initialSpeed, Speed speedStep);
+  MotorController(int forwardBackwardMotor, int leftRightMotor, Speed initialSpeed, Speed finalSpeed, Speed speedStep);
 
-  void setSpeed(Speed speed);
   Speed getSpeed();
 
   void moveForward(unsigned int movingDuration);
@@ -22,6 +21,10 @@ private:
 
   unsigned int calculateTimeQuant(Speed fromSpeed, Speed toSpeed, unsigned int movingDuration);
 
+  void setSpeed(Speed speed);
+
+  Speed initialSpeed_;
+  Speed finalSpeed_;
   Speed speed_;
   Speed speedStep_;
 
