@@ -7,9 +7,6 @@ MotorController::MotorController(int forwardBackwardMotor, int leftRightMotor, S
 }
 
 void MotorController::setSpeed(Speed speed) {
-  Serial.print("Set speed ");
-  Serial.print(speed);
-  Serial.print("\n");
   speed_ = speed;
 }
 
@@ -36,6 +33,21 @@ void MotorController::moveForward(unsigned int movingDuration) {
 }
 
 void MotorController::moveBackward(unsigned int movingDuration) {
+  Serial.print("Move backward ");
+  Serial.print(movingDuration);
+  Serial.print(" seconds\n");
+
+  forwardBackwardMotor_.run(RELEASE);
+
+  //Motor spinning clockwise
+  forwardBackwardMotor_.run(FORWARD);
+
+  speedUp(initialSpeed_, finalSpeed_, movingDuration);
+
+  speedDown(finalSpeed_, initialSpeed_, movingDuration);
+
+  // Now turn off motor
+  forwardBackwardMotor_.run(RELEASE);
 }
 
 void MotorController::turnLeft(unsigned int movingDuration) {
