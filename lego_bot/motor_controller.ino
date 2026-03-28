@@ -19,17 +19,16 @@ void MotorController::moveForward(unsigned int movingDuration) {
   Serial.print(movingDuration);
   Serial.print(" seconds\n");
 
-  forwardBackwardMotor_.run(RELEASE);
-
   //Motor spinning anti-clockwise
   forwardBackwardMotor_.run(BACKWARD);
+  forwardBackwardMotor_.run(RELEASE);
 
   speedUp(initialSpeed_, finalSpeed_, movingDuration);
 
   speedDown(finalSpeed_, initialSpeed_, movingDuration);
 
   // Now turn off motor
-  forwardBackwardMotor_.run(RELEASE);
+  forwardBackwardMotor_.run(BRAKE);
 }
 
 void MotorController::moveBackward(unsigned int movingDuration) {
@@ -37,17 +36,16 @@ void MotorController::moveBackward(unsigned int movingDuration) {
   Serial.print(movingDuration);
   Serial.print(" seconds\n");
 
-  forwardBackwardMotor_.run(RELEASE);
-
   //Motor spinning clockwise
   forwardBackwardMotor_.run(FORWARD);
+  forwardBackwardMotor_.run(RELEASE);
 
   speedUp(initialSpeed_, finalSpeed_, movingDuration);
 
   speedDown(finalSpeed_, initialSpeed_, movingDuration);
 
   // Now turn off motor
-  forwardBackwardMotor_.run(RELEASE);
+  forwardBackwardMotor_.run(BRAKE);
 }
 
 void MotorController::turnLeft(unsigned int movingDuration) {
@@ -61,8 +59,16 @@ void MotorController::turnRight(unsigned int movingDuration) {
 void MotorController::speedUp(Speed fromSpeed, Speed toSpeed, unsigned int movingDuration) {
   unsigned int timeQuant = calculateTimeQuant(fromSpeed, toSpeed, movingDuration);
   for (uint8_t i = fromSpeed; i < toSpeed; i += speedStep_) {
+  Serial.print("Set speed ");
+  Serial.print(i);
+  Serial.print("\n");
+
     forwardBackwardMotor_.setSpeed(i);
     setSpeed(i);
+
+  Serial.print("Delay ");
+  Serial.print(timeQuant);
+  Serial.print(" ms\n");
     delay(timeQuant);
   }
 }
@@ -72,6 +78,10 @@ void MotorController::speedDown(Speed fromSpeed, Speed toSpeed, unsigned int mov
   for (uint8_t i = fromSpeed; i != toSpeed; i -= speedStep_) {
     forwardBackwardMotor_.setSpeed(i);
     setSpeed(i);
+
+      Serial.print("Delay ");
+  Serial.print(timeQuant);
+  Serial.print(" ms\n");
     delay(timeQuant);
   }
 }
