@@ -2,16 +2,8 @@
 
 #include <math.h>
 
-MotorController::MotorController(int forwardBackwardMotor, int leftRightMotor, Speed initialSpeed, Speed finalSpeed, Speed speedStep)
-  : forwardBackwardMotor_(forwardBackwardMotor), leftRightMotor_(leftRightMotor), initialSpeed_(initialSpeed), finalSpeed_(finalSpeed), speedStep_(speedStep), speed_(0) {
-}
-
-void MotorController::setSpeed(Speed speed) {
-  speed_ = speed;
-}
-
-Speed MotorController::getSpeed() {
-  return speed_;
+MotorController::MotorController(int forwardBackwardMotor, int leftRightMotor)
+  : forwardBackwardMotor_(forwardBackwardMotor), leftRightMotor_(leftRightMotor) {
 }
 
 void MotorController::moveForward(unsigned int movingDuration) {
@@ -19,26 +11,31 @@ void MotorController::moveForward(unsigned int movingDuration) {
   Serial.print(movingDuration);
   Serial.print(" seconds\n");
 
+  leftRightMotor_.run(RELEASE);
+
   //Motor spinning anti-clockwise
   forwardBackwardMotor_.run(BACKWARD);
+  forwardBackwardMotor_.setSpeed(LEGO_MOTOR_SPEED);
 
-  speedUp(initialSpeed_, finalSpeed_, movingDuration);
-  speedDown(finalSpeed_, initialSpeed_, movingDuration);
+  delay(movingDuration);
 
   // Now turn off motor
   forwardBackwardMotor_.run(RELEASE);
 }
+
 
 void MotorController::moveBackward(unsigned int movingDuration) {
   Serial.print("Move backward ");
   Serial.print(movingDuration);
   Serial.print(" seconds\n");
 
+  leftRightMotor_.run(RELEASE);
+
   //Motor spinning clockwise
   forwardBackwardMotor_.run(FORWARD);
+  forwardBackwardMotor_.setSpeed(LEGO_MOTOR_SPEED);
 
-  speedUp(initialSpeed_, finalSpeed_, movingDuration);
-  speedDown(finalSpeed_, initialSpeed_, movingDuration);
+  delay(movingDuration);
 
   // Now turn off motor
   forwardBackwardMotor_.run(RELEASE);
@@ -49,12 +46,17 @@ void MotorController::turnLeft(unsigned int movingDuration) {
   Serial.print(movingDuration);
   Serial.print(" seconds\n");
 
-  //Motor spinning anti-clockwise
+  // forwardBackwardMotor_.setSpeed(finalSpeed_);
+  leftRightMotor_.setSpeed(LEGO_MOTOR_SPEED);
   leftRightMotor_.run(BACKWARD);
 
-  speedUp(initialSpeed_, finalSpeed_, movingDuration);
+  forwardBackwardMotor_.run(FORWARD);
+  forwardBackwardMotor_.setSpeed(LEGO_MOTOR_SPEED);
 
-  // Now turn off motor
+  delay(movingDuration);
+
+  // Now turn off motors
+  forwardBackwardMotor_.run(RELEASE);
   leftRightMotor_.run(RELEASE);
 }
 
@@ -63,40 +65,15 @@ void MotorController::turnRight(unsigned int movingDuration) {
   Serial.print(movingDuration);
   Serial.print(" seconds\n");
 
-  //Motor spinning anti-clockwise
   leftRightMotor_.run(FORWARD);
-  speedUp(initialSpeed_, finalSpeed_, movingDuration);
+  leftRightMotor_.setSpeed(LEGO_MOTOR_SPEED);
 
-  // Now turn off motor
+  forwardBackwardMotor_.run(FORWARD);
+  forwardBackwardMotor_.setSpeed(LEGO_MOTOR_SPEED);
+
+  delay(movingDuration);
+
+  // Now turn off motors
+  forwardBackwardMotor_.run(RELEASE);
   leftRightMotor_.run(RELEASE);
-}
-
-void MotorController::speedUp(Speed fromSpeed, Speed toSpeed, unsigned int movingDuration) {
-  unsigned int timeQuant = calculateTimeQuant(fromSpeed, toSpeed, movingDuration);
-  for (uint8_t i = fromSpeed; i < toSpeed; i += speedStep_) {
-
-    forwardBackwardMotor_.setSpeed(i);
-
-    setSpeed(i);
-
-    delay(timeQuant);
-  }
-}
-
-void MotorController::speedDown(Speed fromSpeed, Speed toSpeed, unsigned int movingDuration) {
-  unsigned int timeQuant = calculateTimeQuant(fromSpeed, toSpeed, movingDuration);
-  for (uint8_t i = fromSpeed; i != toSpeed; i -= speedStep_) {
-    forwardBackwardMotor_.setSpeed(i);
-
-    setSpeed(i);
-
-    delay(timeQuant);
-  }
-}
-
-unsigned int MotorController::calculateTimeQuant(Speed fromSpeed, Speed toSpeed, unsigned int movingDuration) {
-  unsigned int speedDiff = abs(fromSpeed - toSpeed);
-  unsigned int timeQuantsCount = speedDiff / speedStep_;
-  unsigned int timeQuant = movingDuration / timeQuantsCount;
-  return timeQuant;
 }
