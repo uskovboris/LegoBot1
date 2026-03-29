@@ -12,5 +12,5 @@ void setup() {
 
 void loop() {
   motorController_.moveForward(3000);
-  motorController_.turnRight(1000);
+  motorController_.turnRight(2000); 
 }

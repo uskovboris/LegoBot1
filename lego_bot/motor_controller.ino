@@ -14,7 +14,7 @@ void MotorController::moveForward(unsigned int movingDuration) {
   leftRightMotor_.run(RELEASE);
 
   //Motor spinning anti-clockwise
-  forwardBackwardMotor_.run(BACKWARD);
+  forwardBackwardMotor_.run(FORWARD);
   forwardBackwardMotor_.setSpeed(LEGO_MOTOR_SPEED);
 
   delay(movingDuration);
@@ -32,7 +32,7 @@ void MotorController::moveBackward(unsigned int movingDuration) {
   leftRightMotor_.run(RELEASE);
 
   //Motor spinning clockwise
-  forwardBackwardMotor_.run(FORWARD);
+  forwardBackwardMotor_.run(BACKWARD);
   forwardBackwardMotor_.setSpeed(LEGO_MOTOR_SPEED);
 
   delay(movingDuration);
